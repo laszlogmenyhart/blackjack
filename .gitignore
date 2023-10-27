@@ -1,0 +1,3 @@
+haskell/*.exe
+haskell/*.hi
+haskell/*.o
