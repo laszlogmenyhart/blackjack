@@ -1,3 +1,7 @@
+cs/.vs
+cs/bin
+cs/obj
+
 haskell/*.exe
 haskell/*.hi
 haskell/*.o
