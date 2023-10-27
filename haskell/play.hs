@@ -12,231 +12,126 @@ import Data.Maybe (fromMaybe)
 stringToInt :: String -> Int
 stringToInt s = fromMaybe (error "") (readMaybe s)
 
-osszefuz :: [a] -> [a] -> [a]
-osszefuz [] []  = []
-osszefuz a [] = a
-osszefuz [] b = b
-osszefuz (a:as) (b:bs) = do
-    let vel = veletlenSzam 1 100
-    {-if ( unsafePerformIO vel ) < 50-}
+compose :: [a] -> [a] -> [a]
+compose [] []  = []
+compose a [] = a
+compose [] b = b
+compose (a:as) (b:bs) = do
+    let vel = randomNumber 1 100
     if vel < 50
-        then [a] ++ [b] ++ ( osszefuz as bs ) 
-        else [b] ++ [a] ++ ( osszefuz as bs ) 
+        then [a] ++ ( compose as ([b] ++ bs) ) 
+        else [b] ++ ( compose ([a] ++ as) bs ) 
 
-{-
-osszefuz :: [a] -> [a] -> [a]
-osszefuz (_,_) = []
-osszefuz (a,) = a
-osszefuz (,b) = b
-osszefuz (a,b) = do
-    if (length a == 0) && (length b == 0)
-        then []
-    else if (length a == 0)
-        then b
-    else if (length b == 0)
-        then a
-    else osszefuz a b
--}
-
-keverEgy :: [a] -> [a]
-keverEgy (x) = do
-    let vel = veletlenSzam 1 52
-    {-let spl = splitAt ( unsafePerformIO vel ) x-}
+swapOnce :: [a] -> [a]
+swapOnce (x) = do
+    let vel = randomNumber 1 52
     let spl = Data.List.splitAt vel x
-    osszefuz (fst spl) (snd spl)
+    compose (fst spl) (snd spl)
+
+swap :: Int -> [a] -> [a]
+swap 0 x = x
+swap db x = swap ( db - 1 ) ( swapOnce x )
 
 {-}
-keverEgy :: [a] -> IO [a]
-keverEgy (x:xs) = xs ++ [x]
-keverEgy (x) = do
-    vel <- veletlenSzam 1 52
-    let vag=splitAt vel x
-    print $ vag
+swap2 :: (Int , [a]) -> [a]
+swap2 (0,x) = x
+swap2 (db,x) = swap2 (( db - 1 ),( swapOnce x ))
 -}
-    {-}
-    let e=head vag
-    e
-    print vag
-    let b=last vag
-    osszetesz a b -}
-    
 
-
-kever :: Int -> [a] -> [a]
-kever 0 x = x
-kever db x = kever ( db - 1 ) ( keverEgy x )
-
-kever2 :: (Int , [a]) -> [a]
-kever2 (0,x) = x
-kever2 (db,x) = kever2 (( db - 1 ),( keverEgy x ))
-
-{-
-myFunc :: String -> [a]
-myFunc x = do {
-    let a = 1:2:[]
-    a
-}
--}
+randomNumber :: Int -> Int -> Int
+randomNumber x y = unsafePerformIO ( getStdRandom ( randomR (x,y) ) )
 
 {-}
-huzas :: [a] -> (String, [a])
-huzas [x] = (head x, tail x)
+randomNumber2 :: (Int,Int) -> Int
+randomNumber2 (x,y) = unsafePerformIO ( getStdRandom ( randomR (x,y) ) )
 -}
 
-veletlenSzam :: Int -> Int -> Int
-veletlenSzam x y = unsafePerformIO ( getStdRandom ( randomR (x,y) ) )
+askHitMore :: [Text] -> IO String
+askHitMore x = do
+    let sc=countScore x
+    putStrLn ("Cards of Player: " ++ show x)
+    putStrLn ("  Total score: " ++ show sc)
+    if (sc > 21) then
+        return "n"
+    else do
+        putStrLn ("Do you hit one more card? (y/N):")
+        line <- getLine
+        return line
 
-veletlenSzam2 :: (Int,Int) -> Int
-veletlenSzam2 (x,y) = unsafePerformIO ( getStdRandom ( randomR (x,y) ) )
-
-huzolMeg :: [Text] -> IO String
-huzolMeg x = do
-    {-}
-    let x2=x
-    -}
-    putStrLn ("A paklid jelenleg: " ++ show x)
-    putStrLn ("Huzol meg? (y/N):")
-    line <- getLine
-    return line
-
-jatszikJatekos :: ([Text], [Text]) -> ([Text], [Text])
-jatszikJatekos (j, m)
-    | (unsafePerformIO ( huzolMeg j )) == "y" = jatszikJatekos ( j ++ [ (Data.List.head m) ] , Data.List.tail m )
+playsPlayer :: ([Text], [Text]) -> ([Text], [Text])
+playsPlayer (j, m)
+    | (unsafePerformIO ( askHitMore j )) == "y" = playsPlayer ( j ++ [ (Data.List.head m) ] , Data.List.tail m )
     | otherwise = (j,m)
 
-{-}
-proba :: [a] -> IO Int
-proba x = do
-    putStrLn ("x: " ++ show x)
-    return 42
--}
+lastPartInt :: Text.Text -> Int
+lastPartInt a = stringToInt (Data.List.last (Data.List.Split.splitOn ";" (Data.Text.unpack a)))
 
-myfnc :: Text.Text -> Int
-myfnc a = stringToInt (Data.List.last (Data.List.Split.splitOn ";" (Data.Text.unpack a)))
-
-pluszSzam11v1 :: Int -> Int -> Int
-pluszSzam11v1 a b
+plusNumber11o1 :: Int -> Int -> Int
+plusNumber11o1 a b
     | (b==11) && (a+b>21) = a + 1
     | otherwise = a + b
 
-jatszikBank :: ([Text.Text], [Text.Text]) -> ([Text.Text], [Text.Text])
-jatszikBank (b, m)
-        | (szamol b) <= 16  = jatszikBank ( b ++ [ (Data.List.head m) ] , Data.List.tail m )
+playsBank :: ([Text.Text], [Text.Text]) -> ([Text.Text], [Text.Text])
+playsBank (b, m)
+        | (countScore b) <= 16  = playsBank ( b ++ [ (Data.List.head m) ] , Data.List.tail m )
         | otherwise = (b, m)
 
+countScore :: [Text] -> Int
+countScore [] = 0
+countScore b = Data.List.foldl plusNumber11o1 0 (sort (Data.List.map lastPartInt b))
 
-szamol :: [Text] -> Int
-szamol [] = 0
-szamol b = Data.List.foldl pluszSzam11v1 0 (sort (Data.List.map myfnc b))
-
-vegpont :: Int -> Int
-vegpont x
+finalScore :: Int -> Int
+finalScore x
     | x > 21    = 0
     | otherwise = x
 
 main :: IO()
 main = do
+    deckOfCards <- fmap Text.lines (Text.readFile "deckOfCards.txt")
+
+    let swappedDOC=swap 100 deckOfCards
     {-}
-    let s = "1234"
-    let result = stringToInt s
-    putStrLn (show result)
-    let ossz = result + 2
-    print $ ossz
+    print $ swappedDOC
     -}
+    
+    let player = [ (Data.List.head swappedDOC) ]
+    let swappedDOC2 = Data.List.tail swappedDOC
 
-    pakli <- fmap Text.lines (Text.readFile "deckOfCards.txt")
+    let bank = [ (Data.List.head swappedDOC2) ]
+    let swappedDOC3 = Data.List.tail swappedDOC2
+
+    putStrLn ("You can see this card at Bank : " ++ show bank)
+    putStrLn ("  Score: " ++ show (countScore bank))
+
+    let player2 = player ++ [ (Data.List.head swappedDOC3) ]
+    let swappedDOC4 = Data.List.tail swappedDOC3
+
+    let bank2 = bank ++ [ (Data.List.head swappedDOC4) ]
+    let swappedDOC5 = Data.List.tail swappedDOC4
+
+    let playerResult=playsPlayer (player2, swappedDOC5)
+    let player3 = fst playerResult
+    let swappedDOC6 = snd playerResult
+    let playerScore=countScore player3
+    let playerScoreFinal = finalScore playerScore
+    putStrLn ("Cards of Player : " ++ show player3)
+    putStrLn ("  Total score: " ++ show playerScore ++ ", final score: " ++ show playerScoreFinal)
+
+    let bankResult=playsBank (bank2,swappedDOC6)
+    let bank3 = fst bankResult
     {-}
-    putStrLn ("Pakli: " ++ show pakli)
-    let ketto = splitAt vel ls
+    let swappedDOC7 = snd bankResult
     -}
+    let bankScore=countScore bank3
+    let bankScoreFinal = finalScore bankScore
+    putStrLn ("Cards of Bank : " ++ show bank3)
+    putStrLn ("  Total score: " ++ show bankScore ++ ", final score: " ++ show bankScoreFinal)
 
-{-}
-    x <- veletlenSzam 1 10
-    print x
--}
-    {-print $ veletlenSzam    -}
-
-    let kp=kever 100 pakli
-    print $ kp
-    {-}
-    print $ kever2 (1,pakli)
-    print $ ( Data.List.head kp , Data.List.tail kp )
-    -}
-
-
-    let jatekos = [ (Data.List.head kp) ]
-    let kp2 = Data.List.tail kp
-    {-}
-    print $ jatekos
-    print $ kp2
-    -}
-
-    let bank = [ (Data.List.head kp2) ]
-    let kp3 = Data.List.tail kp2
-
-    let jatekos2 = jatekos ++ [ (Data.List.head kp3) ]
-    let kp4 = Data.List.tail kp3
-
-    putStrLn ("Bank   : " ++ show bank)
-    {-}
-    putStrLn ("Jatekos: " ++ show jatekos2)
-    -}
-
-    let bank2 = bank ++ [ (Data.List.head kp4) ]
-    let kp5 = Data.List.tail kp4
-
-    let jatekPakli=jatszikJatekos (jatekos2, kp5)
-    let jatekos3 = fst jatekPakli
-    putStrLn ("jatekosPakli   : " ++ show jatekos3)
-    let kp6 = snd jatekPakli
-
-    {-}
-    let bankPakli=unsafePerformIO ( jatszikBank (bank2,kp6) )
-    -}
-
-    let bankPakli=jatszikBank (bank2,kp6)
-    {-}
-    putStrLn ("bankPakli   : " ++ show bankPakli)
-    -}
-    let bank3 = fst bankPakli
-    putStrLn ("bankPakli   : " ++ show bank3)
-    let kp7 = snd bankPakli
-
-    let pontJatekos=szamol jatekos3
-    let pontBank=szamol bank3
-
-    let pontBankVegso = vegpont pontBank
-    let pontJatekosVegso = vegpont pontJatekos
-
-    if ((pontJatekosVegso == 21) && (pontBankVegso < 21)) then
-        putStrLn ("BLACKJACK Nyeremény 3:2")
-    else if (pontJatekosVegso == pontBankVegso) then
-        putStrLn ("PUSH Visszajár a tét 1:1")
-    else if (pontJatekosVegso > pontBankVegso) then
-        putStrLn ("BUST Nyeremeny 2:1")
+    if ((playerScoreFinal == 21) && (bankScoreFinal < 21)) then
+        putStrLn ("BLACKJACK Win - 3:2")
+    else if ((playerScoreFinal == bankScoreFinal) && (playerScoreFinal > 0)) then
+        putStrLn ("PUSH Get back - 1:1")
+    else if (playerScoreFinal > bankScoreFinal) then
+        putStrLn ("BUST Win - 2:1")
     else
-        putStrLn ("VESZTETTEL")
-
-    {-}
-    huzas kls
-    let huzott = huzas kls
-    print $ huzott
-    kls <- snd huzott
-    jatekos <- jatekos ++ [(fst huzott)]
-
-    print $ jatekos
-    -}
-
-    {-
-    print $ keverEgy ls
-    let kls = kever x ls
-    let kls = keverEgy ls
-    print $ kls
-    -}
-    
-
-    {-}
-    let aaa =  myFunc "abc"
-    print $ aaa
-    -}
-    
+        putStrLn ("YOU LOST - 0:1")

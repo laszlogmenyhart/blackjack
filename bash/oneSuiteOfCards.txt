@@ -1,0 +1,13 @@
+pikk;2;2
+pikk;3;3
+pikk;4;4
+pikk;5;5
+pikk;6;6
+pikk;7;7
+pikk;8;8
+pikk;9;9
+pikk;10;10
+pikk;J;10
+pikk;Q;10
+pikk;K;10
+pikk;A;11
