@@ -57,8 +57,6 @@ rm .a
 rm .b
 #cat .swappedDOC
 
-
-
 cat .swappedDOC | head -n 1 > .player
 mv .swappedDOC .swappedDOC~ && cat .swappedDOC~ | tail -n +2 >> .swappedDOC && rm .swappedDOC~
 
@@ -88,35 +86,32 @@ while
     cat .swappedDOC | head -n 1 >> .player
     mv .swappedDOC .swappedDOC~ && cat .swappedDOC~ | tail -n +2 >> .swappedDOC && rm .swappedDOC~
 done
-#    let jatekPakli=playsPlayer (player2, swappedDOC5)
-#    let player3 = fst jatekPakli
-#    let swappedDOC6 = snd jatekPakli
-
 playerScore=`countScore .player`
 playerScoreFinal=`finalScore $playerScore`
-echo "Cards of Player :`echo -n '[\"' && ( cat .player | tr '\n' ',' | sed 's/,$//' || sed 's/,/\",\"/g' ) && echo -n '\"]'`"
-echo "  Total score: $playerScore, final score: $playerScoreFinal"
 
 while [ `countScore .bank` -le 16 ]; do
     cat .swappedDOC | head -n 1 >> .bank
     mv .swappedDOC .swappedDOC~ && cat .swappedDOC~ | tail -n +2 >> .swappedDOC && rm .swappedDOC~
 done
-
 bankScore=`countScore .bank`
 bankScoreFinal=`finalScore $bankScore`
-echo "Cards of Bank : `echo -n '[\"' && ( cat .bank | tr '\n' ',' | sed 's/,$//' || sed 's/,/\",\"/g' ) && echo -n '\"]'`"
-echo "  Total score: $bankScore, final score: $bankScoreFinal"
-
 
 if [ $playerScoreFinal -eq 21 -a $bankScoreFinal -lt 21 ]; then
-    echo "BLACKJACK Win - 3:2"
+    blackjackResult="BLACKJACK Win - 3:2"
 elif [ $playerScoreFinal -eq $bankScoreFinal -a $playerScoreFinal -gt 0 ]; then
-    echo "PUSH Get back - 1:1"
+    blackjackResult="PUSH Get back - 1:1"
 elif [ $playerScoreFinal -gt $bankScoreFinal ]; then
-    echo "BUST Win - 2:1"
+    blackjackResult="BUST Win - 2:1"
 else
-    echo "YOU LOST - 0:1"
+    blackjackResult="YOU LOST - 0:1"
 fi
+
+
+echo "Cards of Player :`echo -n '[\"' && ( cat .player | tr '\n' ',' | sed 's/,$//' || sed 's/,/\",\"/g' ) && echo -n '\"]'`"
+echo "  Total score: $playerScore, final score: $playerScoreFinal"
+echo "Cards of Bank : `echo -n '[\"' && ( cat .bank | tr '\n' ',' | sed 's/,$//' || sed 's/,/\",\"/g' ) && echo -n '\"]'`"
+echo "  Total score: $bankScore, final score: $bankScoreFinal"
+echo $blackjackResult
 
 rm .swappedDOC
 rm .player

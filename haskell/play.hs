@@ -114,8 +114,6 @@ main = do
     let swappedDOC6 = snd playerResult
     let playerScore=countScore player3
     let playerScoreFinal = finalScore playerScore
-    putStrLn ("Cards of Player : " ++ show player3)
-    putStrLn ("  Total score: " ++ show playerScore ++ ", final score: " ++ show playerScoreFinal)
 
     let bankResult=playsBank (bank2,swappedDOC6)
     let bank3 = fst bankResult
@@ -124,14 +122,17 @@ main = do
     -}
     let bankScore=countScore bank3
     let bankScoreFinal = finalScore bankScore
+
+    let blackjackResult = if ((playerScoreFinal == 21) && (bankScoreFinal < 21))
+        then "BLACKJACK Win - 3:2"
+        else if ((playerScoreFinal == bankScoreFinal) && (playerScoreFinal > 0))
+        then "PUSH Get back - 1:1"
+        else if (playerScoreFinal > bankScoreFinal)
+        then "BUST Win - 2:1"
+        else "YOU LOST - 0:1"
+
+    putStrLn ("Cards of Player : " ++ show player3)
+    putStrLn ("  Total score: " ++ show playerScore ++ ", final score: " ++ show playerScoreFinal)
     putStrLn ("Cards of Bank : " ++ show bank3)
     putStrLn ("  Total score: " ++ show bankScore ++ ", final score: " ++ show bankScoreFinal)
-
-    if ((playerScoreFinal == 21) && (bankScoreFinal < 21)) then
-        putStrLn ("BLACKJACK Win - 3:2")
-    else if ((playerScoreFinal == bankScoreFinal) && (playerScoreFinal > 0)) then
-        putStrLn ("PUSH Get back - 1:1")
-    else if (playerScoreFinal > bankScoreFinal) then
-        putStrLn ("BUST Win - 2:1")
-    else
-        putStrLn ("YOU LOST - 0:1")
+    putStrLn (blackjackResult)
