@@ -2,7 +2,7 @@
 
 function countScore() {
     sum=0
-    for x in `cat $1 | cut -f 3 -d";"`; do
+    for x in `cat $1 | cut -f 3 -d";" | sort -n`; do
         if [ $x -eq 11 -a `expr $sum + $x` -gt 21 ]; then
             sum=`expr $sum + 1`
         else

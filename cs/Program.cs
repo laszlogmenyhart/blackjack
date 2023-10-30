@@ -8,11 +8,16 @@ namespace play
 
         static int countScore(int N, string[] arr)
         {
+            int[] values=new int[N];
+            for (int i = 0; i < N; i++) {
+                values[i]=Int32.Parse(arr[i].Split(";")[2]);
+            }
+            Array.Sort(values);
             int sum = 0;
             for (int i = 0; i < N; i++)
             {
-                int x = Int32.Parse(arr[i].Split(";")[2]);
-                if ((x == 11) && (sum + x > 1))
+                int x = values[i];
+                if ((x == 11) && (sum + x > 21))
                 {
                     sum += 1;
                 }
