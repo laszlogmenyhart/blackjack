@@ -59,16 +59,12 @@ rm .b
 
 cat .swappedDOC | head -n 1 > .player
 mv .swappedDOC .swappedDOC~ && cat .swappedDOC~ | tail -n +2 >> .swappedDOC && rm .swappedDOC~
-
 cat .swappedDOC | head -n 1 > .bank
 mv .swappedDOC .swappedDOC~ && cat .swappedDOC~ | tail -n +2 >> .swappedDOC && rm .swappedDOC~
-
 echo "You can see this card at Bank : `echo -n '[\"' && ( cat .bank | tr '\n' ',' | sed 's/,$//' || sed 's/,/\",\"/g' ) && echo -n '\"]'`"
 echo "  Score: `countScore .bank`"
-
 cat .swappedDOC | head -n 1 >> .player
 mv .swappedDOC .swappedDOC~ && cat .swappedDOC~ | tail -n +2 >> .swappedDOC && rm .swappedDOC~
-
 cat .swappedDOC | head -n 1 > .bank
 mv .swappedDOC .swappedDOC~ && cat .swappedDOC~ | tail -n +2 >> .swappedDOC && rm .swappedDOC~
 
@@ -86,14 +82,16 @@ while
     cat .swappedDOC | head -n 1 >> .player
     mv .swappedDOC .swappedDOC~ && cat .swappedDOC~ | tail -n +2 >> .swappedDOC && rm .swappedDOC~
 done
-playerScore=`countScore .player`
-playerScoreFinal=`finalScore $playerScore`
 
 while [ `countScore .bank` -le 16 ]; do
     cat .swappedDOC | head -n 1 >> .bank
     mv .swappedDOC .swappedDOC~ && cat .swappedDOC~ | tail -n +2 >> .swappedDOC && rm .swappedDOC~
 done
+
+playerScore=`countScore .player`
 bankScore=`countScore .bank`
+
+playerScoreFinal=`finalScore $playerScore`
 bankScoreFinal=`finalScore $bankScore`
 
 if [ $playerScoreFinal -eq 21 -a $bankScoreFinal -lt 21 ]; then
