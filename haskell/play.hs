@@ -77,7 +77,7 @@ countScore b = Data.List.foldl plusNumber11o1 0 (sort (Data.List.map lastPartInt
 
 playsBank :: ([Text.Text], [Text.Text]) -> ([Text.Text], [Text.Text])
 playsBank (b, m)
-        | (countScore b) <= 16  = playsBank ( b ++ [ (Data.List.head m) ] , Data.List.tail m )
+        | (countScore b) < 17  = playsBank ( b ++ [ (Data.List.head m) ] , Data.List.tail m )
         | otherwise = (b, m)
 
 finalScore :: Int -> Int

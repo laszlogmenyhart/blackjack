@@ -83,7 +83,7 @@ while
     mv .swappedDOC .swappedDOC~ && cat .swappedDOC~ | tail -n +2 >> .swappedDOC && rm .swappedDOC~
 done
 
-while [ `countScore .bank` -le 16 ]; do
+while [ `countScore .bank` -lt 17 ]; do
     cat .swappedDOC | head -n 1 >> .bank
     mv .swappedDOC .swappedDOC~ && cat .swappedDOC~ | tail -n +2 >> .swappedDOC && rm .swappedDOC~
 done

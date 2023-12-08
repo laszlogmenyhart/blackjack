@@ -165,7 +165,7 @@
                 }
             } while (val == "y");
 
-            while (countScore(bankN, bank) <= 16)
+            while (countScore(bankN, bank) < 17)
             {
                 getACard(ref bankN, ref bank, ref swappedDOCN, ref swappedDOC);
             }
